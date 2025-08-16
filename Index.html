@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Las Seis Gerberas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fce4ec; /* Rosa muy claro */
+            color: #4a4a4a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Animación para aparición gradual */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animación para el efecto de pulso */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+        
+        /* Animación para el botón de pulso */
+        @keyframes pulse-button {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+        
+        /* Animación para el brillo del botón */
+        @keyframes button-shine {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        /* Estilos generales para los elementos que aparecen */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0; /* Asegura que inicie invisible */
+        }
+
+        h1.fade-in { animation-delay: 0.1s; }
+        p.fade-in { animation-delay: 0.3s; }
+        .gerberas-container.fade-in { animation-delay: 0.5s; }
+        .content-container.fade-in { animation-delay: 0.7s; }
+        .question-box.fade-in { animation: fadeIn 0.6s ease-out forwards; } /* Para el contenido interno */
+
+
+        .gerberas-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .gerbera {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #e91e63; /* Rosa fuerte */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15); /* Sombra más suave y extendida */
+            transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            animation: pulse 2s infinite alternate; /* Animación de pulso */
+            border: 2px solid #fff; /* Contorno blanco */
+        }
+
+        .gerbera.locked {
+            background-color: #a0a0a0; /* Gris */
+            cursor: not-allowed;
+            opacity: 0.7;
+            animation: none; /* Desactivar pulso si está bloqueada */
+            border: 2px solid #ccc; /* Contorno gris */
+        }
+        
+        .gerbera:not(.locked):hover {
+            transform: scale(1.1); /* Aumento al pasar el ratón */
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2); /* Sombra más pronunciada al hover */
+        }
+
+        .content-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px; /* Bordes más redondeados */
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1); /* Sombra suave y extendida */
+            max-width: 600px;
+            text-align: center;
+            border: 2px solid #f8bbd0; /* Contorno rosa claro */
+        }
+
+        .title-box {
+            background-color: #ffb6c1; /* Rosa pastel */
+            color: #e91e63; /* Rosa fuerte */
+            padding: 15px;
+            border-radius: 10px; /* Bordes más redondeados */
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 1.5em;
+            border: 2px solid #e91e63; /* Contorno más marcado */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave */
+        }
+
+        .question-box {
+            background-color: #fff;
+            padding: 25px; /* Más espacio interior */
+            border-radius: 10px; /* Bordes más redondeados */
+            margin-bottom: 20px;
+            border: 2px dashed #e1bee7; /* Contorno punteado suave */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra muy suave */
+        }
+
+        input, select, textarea {
+            padding: 12px; /* Más espacio interior */
+            margin-top: 10px;
+            border-radius: 8px; /* Bordes más redondeados */
+            border: 2px solid #ddd; /* Contorno más grueso */
+            width: 80%;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2);
+            outline: none;
+        }
+
+        button {
+            background-color: #e91e63;
+            color: white;
+            border: 2px solid #fff; /* Contorno blanco */
+            cursor: pointer;
+            padding: 15px 30px; /* Botones más grandes */
+            border-radius: 8px; /* Bordes más redondeados */
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave */
+        }
+        
+        button#boton-gerbera1 {
+            padding: 20px 35px;
+            font-size: 1.1em;
+            animation: pulse-button 1.5s infinite alternate; /* Animación de pulso para el botón */
+        }
+        
+        button:hover {
+            background-color: #c2185b;
+            transform: scale(1.03);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.2); /* Sombra más pronunciada al hover */
+            border-color: #fff;
+        }
+
+        .option-button {
+            background-color: #fff;
+            border: 2px solid #f8bbd0; /* Contorno rosa claro */
+            width: 100%;
+            text-align: center;
+            padding: 18px; /* Más espacio interior */
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 10px;
+            border-radius: 8px; /* Bordes más redondeados */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra muy suave */
+        }
+        
+        .option-button:hover {
+            background-color: #fce4ec;
+            border-color: #e91e63;
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra más pronunciada al hover */
+        }
+        
+        .option-button.selected {
+            background-color: #e91e63;
+            color: white;
+            border-color: #fff; /* Contorno blanco al seleccionar */
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.2); /* Sombra más pronunciada al seleccionar */
+        }
+
+        #gerbera-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px; /* Bordes más redondeados */
+            margin-top: 20px;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.1); /* Sombra suave */
+            border: 2px solid #fff; /* Contorno blanco */
+        }
+        
+        .next-button {
+            margin-top: 25px;
+            padding: 18px 35px;
+            font-size: 1.1em;
+            animation: button-shine 1s infinite alternate; /* Animación de brillo */
+            border: 2px solid #fff; /* Contorno blanco */
+            border-radius: 8px; /* Bordes más redondeados */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave */
+        }
+        
+        #rasca-gana {
+            width: 280px; /* Un poco más grande */
+            height: 140px; /* Un poco más alto */
+            background-color: #ddd;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #fff; /* Contorno blanco */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        #rasca-gana span {
+            color: transparent;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: color 0.3s ease-in-out;
+        }
+        
+        #rasca-gana:hover span {
+            color: #555;
+        }
+        #rasca-gana:hover {
+            background-color: #eee;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1 class="fade-in" style="color: #e91e63; animation-delay: 0.1s;">Las Seis Gerberas</h1>
+    <p class="fade-in" style="animation-delay: 0.3s;">Cada gerbera es un paso para llegar a un mensaje que tengo para ti.</p>
+
+    <div class="gerberas-container fade-in" style="animation-delay: 0.5s;">
+        <div class="gerbera" data-gerbera="1">1</div>
+        <div class="gerbera locked" data-gerbera="2">2</div>
+        <div class="gerbera locked" data-gerbera="3">3</div>
+        <div class="gerbera locked" data-gerbera="4">4</div>
+        <div class="gerbera locked" data-gerbera="5">5</div>
+        <div class="gerbera locked" data-gerbera="6">6</div>
+    </div>
+
+    <div id="gerbera-content" class="content-container fade-in" style="animation-delay: 0.7s;">
+        <!-- El contenido de la gerbera actual se insertará aquí por JavaScript -->
+    </div>
+
+    <!-- Etiqueta de audio para la música de fondo -->
+    <audio id="background-music" src="images/amor.mp3" autoplay loop controls style="margin-top: 20px; width: 80%; max-width: 400px; display: none;"></audio>
+    <button id="toggle-music" style="margin-top: 10px; background-color: #66bb6a; border: 2px solid #fff; padding: 10px 20px; border-radius: 5px; color: white;">Música: ON</button>
+
+    <script src="main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const music = document.getElementById('background-music');
+            const toggleMusicButton = document.getElementById('toggle-music');
+            let isPlaying = true; // Asumimos que la música empieza a reproducirse automáticamente
+
+            // Reproducir la música si el navegador lo permite
+            music.play().catch(error => {
+                console.log("La reproducción automática de audio fue bloqueada. El usuario debe interactuar para iniciarla.");
+                // Mostrar el botón de toggle si la reproducción automática falla
+                toggleMusicButton.style.display = 'block';
+                music.style.display = 'block'; // Asegura que los controles estén visibles
+                isPlaying = false;
+                toggleMusicButton.innerText = 'Música: OFF';
+            });
+
+            toggleMusicButton.addEventListener('click', () => {
+                if (isPlaying) {
+                    music.pause();
+                    toggleMusicButton.innerText = 'Música: OFF';
+                } else {
+                    music.play().catch(error => {
+                        console.log("Error al intentar reproducir la música:", error);
+                        // Puedes mostrar un mensaje al usuario si hay un problema al reproducir
+                    });
+                    toggleMusicButton.innerText = 'Música: ON';
+                }
+                isPlaying = !isPlaying;
+            });
+
+             // Hacer los controles de audio visibles solo después de que el usuario interactúe
+             // Esto puede variar por navegador, algunos no permiten autoplay sin interacción.
+             // Aquí lo hacemos visible una vez que la página carga
+             music.style.display = 'block';
+             toggleMusicButton.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

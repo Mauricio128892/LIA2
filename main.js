@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Nuevo mensaje al final
         summaryText += "\nEres el papacito chulo más mamado e increíblemente guapo con el que he estado, ¡y estoy obsesionada contigo! 😍";
-        summaryText += "\n\n¡Te quiero mucho! �"; // El mensaje de cariño final
+        summaryText += "\n\n¡Te quiero mucho! 🥰"; // El mensaje de cariño final
 
         // Usar la API de Clipboard
         if (navigator.clipboard && navigator.clipboard.writeText) {

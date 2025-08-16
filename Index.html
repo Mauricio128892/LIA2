@@ -123,21 +123,42 @@
             100% { transform: scale(1.02); opacity: 1; }
         }
 
-        /* Estilos generales del contenido principal (para que aparezcan después del splash) */
-        h1, p, .gerberas-container, .content-container, audio, #toggle-music {
-            opacity: 0; /* Inicialmente ocultos */
-            animation: none; /* Deshabilita la animación inicial aquí para controlarla con JS */
+        /* Reglas para animar el contenido del splash screen */
+        .splash-item-fade-in {
+            opacity: 0; /* Inicia oculto */
+            animation: fadeIn 0.8s ease-out forwards; /* Usa la animación fadeIn existente */
         }
 
-        /* Después del splash, se activarán las animaciones con JS */
-        .show-content {
-            opacity: 1;
-            animation: fadeIn 0.8s ease-out forwards; /* Re-activar animación */
+        .splash-item-delay-1 { animation-delay: 0.5s; }
+        .splash-item-delay-2 { animation-delay: 1.0s; }
+        .splash-item-delay-3 { animation-delay: 1.5s; }
+        .splash-item-delay-4 { animation-delay: 2.0s; }
+        .splash-item-delay-5 { animation-delay: 2.5s; }
+
+
+        /* Estilos generales del contenido principal (elementos que se muestran después del splash) */
+        /* Aplicamos opacity: 0 directamente a los IDs para ser más específicos */
+        #main-title,
+        #main-subtitle,
+        #gerberas-main-container,
+        #gerbera-content,
+        #background-music, /* Usar ID para el audio */
+        #toggle-music { /* Usar ID para el botón de toggle */
+            opacity: 0; /* Inicialmente ocultos */
+            /* Se ha eliminado 'animation: none;' y 'transition', la animación se controlará con .animated-show */
         }
-        .show-content-delay-1 { animation-delay: 0.1s; }
-        .show-content-delay-3 { animation-delay: 0.3s; }
-        .show-content-delay-5 { animation-delay: 0.5s; }
-        .show-content-delay-7 { animation-delay: 0.7s; }
+
+        /* La animación se aplicará con una clase separada */
+        .animated-show {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        /* Delays para estas animaciones */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-7 { animation-delay: 0.7s; }
+        .delay-8 { animation-delay: 0.8s; } /* Para audio */
+        .delay-9 { animation-delay: 0.9s; } /* Para toggle button */
 
 
         .gerberas-container {
@@ -352,7 +373,7 @@
             width: 80%;
             max-width: 400px;
             opacity: 0; /* Oculto inicialmente, se muestra con JS */
-            transition: opacity 0.5s ease-out;
+            /* Se ha eliminado 'transition', la animación se controlará con .animated-show */
         }
         #toggle-music {
             margin-top: 10px;
@@ -362,7 +383,7 @@
             border-radius: 5px;
             color: white;
             opacity: 0; /* Oculto inicialmente, se muestra con JS */
-            transition: opacity 0.5s ease-out;
+            /* Se ha eliminado 'transition', la animación se controlará con .animated-show */
         }
 
     </style>
@@ -372,18 +393,18 @@
     <!-- Pantalla de Inicio (Splash Screen) -->
     <div id="splash-screen">
         <div class="splash-content">
-            <h1>¡Bienvenido al paseo de Las Gerberas!</h1>
-            <p>Cada gerbera es un mensaje que tengo para ti.</p>
-            <p>Espero lo disfrutes,</p>
-            <p>Te quiero mucho, felices seis meses ❤️</p>
-            <p class="click-to-continue">(Haz clic en cualquier lugar para empezar)</p>
+            <h1 class="splash-item-fade-in splash-item-delay-1">¡Bienvenido al paseo de Las Gerberas!</h1>
+            <p class="splash-item-fade-in splash-item-delay-2">Cada gerbera es un mensaje que tengo para ti.</p>
+            <p class="splash-item-fade-in splash-item-delay-3">Espero lo disfrutes,</p>
+            <p class="splash-item-fade-in splash-item-delay-4">Te quiero mucho, felices seis meses ❤️</p>
+            <p class="click-to-continue splash-item-fade-in splash-item-delay-5">(Haz clic en cualquier lugar para empezar)</p>
         </div>
     </div>
 
-    <h1 id="main-title" class="show-content show-content-delay-1" style="color: #e91e63;">Las Seis Gerberas</h1>
-    <p id="main-subtitle" class="show-content show-content-delay-3">Cada gerbera es un paso para llegar a un mensaje que tengo para ti.</p>
+    <h1 id="main-title" style="color: #e91e63;">Las Seis Gerberas</h1>
+    <p id="main-subtitle">Cada gerbera es un paso para llegar a un mensaje que tengo para ti.</p>
 
-    <div id="gerberas-main-container" class="gerberas-container show-content show-content-delay-5">
+    <div id="gerberas-main-container" class="gerberas-container">
         <div class="gerbera" data-gerbera="1">1</div>
         <div class="gerbera locked" data-gerbera="2">2</div>
         <div class="gerbera locked" data-gerbera="3">3</div>
@@ -392,7 +413,7 @@
         <div class="gerbera locked" data-gerbera="6">6</div>
     </div>
 
-    <div id="gerbera-content" class="content-container show-content show-content-delay-7">
+    <div id="gerbera-content" class="content-container">
         <!-- El contenido de la gerbera actual se insertará aquí por JavaScript -->
     </div>
 
@@ -412,29 +433,20 @@
             const toggleMusicButton = document.getElementById('toggle-music');
             let isPlaying = true; // Asumimos que la música empieza a reproducirse automáticamente
 
-            // Ocultar el contenido principal inicialmente
-            mainTitle.style.opacity = 0;
-            mainSubtitle.style.opacity = 0;
-            gerberasMainContainer.style.opacity = 0;
-            gerberaContent.style.opacity = 0;
-            music.style.opacity = 0;
-            toggleMusicButton.style.opacity = 0;
+            // Ocultar el contenido principal inicialmente a través de JS para controlar la animación
+            // NOTA: Los estilos de opacity: 0 ya están en CSS para estos IDs
+            // No es necesario poner style.opacity = 0 aquí si ya está en CSS.
 
 
             // Mostrar el contenido principal después de que el splash screen se vaya
             const showMainContent = () => {
-                mainTitle.style.opacity = 1;
-                mainSubtitle.style.opacity = 1;
-                gerberasMainContainer.style.opacity = 1;
-                gerberaContent.style.opacity = 1;
-                music.style.opacity = 1;
-                toggleMusicButton.style.opacity = 1;
-
-                // Reactivar las animaciones fade-in del contenido principal
-                mainTitle.classList.add('fade-in');
-                mainSubtitle.classList.add('fade-in');
-                gerberasMainContainer.classList.add('fade-in');
-                gerberaContent.classList.add('fade-in');
+                // Aplicar la clase de animación y los retrasos a cada elemento
+                mainTitle.classList.add('animated-show', 'delay-1');
+                mainSubtitle.classList.add('animated-show', 'delay-3');
+                gerberasMainContainer.classList.add('animated-show', 'delay-5');
+                gerberaContent.classList.add('animated-show', 'delay-7');
+                music.classList.add('animated-show', 'delay-8'); 
+                toggleMusicButton.classList.add('animated-show', 'delay-9');
                 
                 // Intentar reproducir la música al mostrar el contenido, si no se pudo antes
                 music.play().then(() => {
@@ -453,7 +465,7 @@
                 splashScreen.classList.add('fade-out'); // Inicia la animación de desvanecimiento
                 setTimeout(() => {
                     splashScreen.style.display = 'none'; // Oculta el splash screen después de la animación
-                    showMainContent(); // Muestra el contenido principal
+                    showMainContent(); // Muestra el contenido principal con animaciones
                 }, 1000); // Coincide con la duración de la animación fade-out
             });
 
@@ -472,21 +484,18 @@
             });
 
             // Para asegurar que la música intente reproducirse si el autoplay es permitido por el navegador sin clic
-            // Esta parte ya la teníamos y es buena práctica, pero el clic del splash la refuerza.
             music.play().then(() => {
                 console.log("Música reproducida automáticamente al cargar (si el navegador lo permitió).");
                 isPlaying = true;
                 toggleMusicButton.innerText = 'Música: ON';
-                music.style.opacity = 1;
-                toggleMusicButton.style.opacity = 1;
+                // No se necesitan cambios de opacidad aquí, las clases animated-show lo manejarán al salir del splash
             }).catch(error => {
                 console.log("Música bloqueada por el navegador al cargar:", error);
                 isPlaying = false;
                 toggleMusicButton.innerText = 'Música: OFF';
                 music.pause();
                 music.currentTime = 0;
-                music.style.opacity = 0; // Se mantiene oculta hasta el clic en el splash
-                toggleMusicButton.style.opacity = 0; // Se mantiene oculta hasta el clic en el splash
+                // No se necesitan cambios de opacidad aquí, las clases animated-show lo manejarán al salir del splash
             });
         });
     </script>

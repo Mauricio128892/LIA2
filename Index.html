@@ -16,6 +16,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            box-sizing: border-box; /* Importante para el responsive: padding no suma al ancho */
         }
 
         /* Animación para aparición gradual */
@@ -57,8 +58,12 @@
 
         .gerberas-container {
             display: flex;
+            flex-wrap: wrap; /* Las gerberas se envuelven a la siguiente línea */
+            justify-content: center; /* Centra las gerberas horizontalmente */
             gap: 20px;
             margin-bottom: 40px;
+            width: 100%; /* Asegura que ocupe todo el ancho disponible */
+            max-width: 600px; /* Limita el ancho en pantallas grandes */
         }
         
         .gerbera {
@@ -77,6 +82,7 @@
             transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
             animation: pulse 2s infinite alternate; /* Animación de pulso */
             border: 2px solid #fff; /* Contorno blanco */
+            flex-shrink: 0; /* Evita que se encojan demasiado */
         }
 
         .gerbera.locked {
@@ -97,9 +103,11 @@
             padding: 30px;
             border-radius: 12px; /* Bordes más redondeados */
             box-shadow: 0 8px 15px rgba(0,0,0,0.1); /* Sombra suave y extendida */
-            max-width: 600px;
+            width: 90%; /* Ocupa el 90% del ancho de la pantalla */
+            max-width: 600px; /* Limita el ancho en pantallas grandes */
             text-align: center;
             border: 2px solid #f8bbd0; /* Contorno rosa claro */
+            box-sizing: border-box; /* padding y border no suman al ancho */
         }
 
         .title-box {
@@ -128,7 +136,9 @@
             margin-top: 10px;
             border-radius: 8px; /* Bordes más redondeados */
             border: 2px solid #ddd; /* Contorno más grueso */
-            width: 80%;
+            width: 90%; /* Ajuste a 90% del contenedor padre */
+            max-width: 400px; /* Limita el ancho máximo */
+            box-sizing: border-box; /* padding y border no suman al ancho */
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         input:focus, select:focus, textarea:focus {
@@ -146,6 +156,8 @@
             border-radius: 8px; /* Bordes más redondeados */
             transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave */
+            width: auto; /* Ancho automático para no desbordarse */
+            max-width: 100%; /* Evita que el botón sea más grande que su padre */
         }
         
         button#boton-gerbera1 {
@@ -164,7 +176,7 @@
         .option-button {
             background-color: #fff;
             border: 2px solid #f8bbd0; /* Contorno rosa claro */
-            width: 100%;
+            width: 100%; /* Ocupa todo el ancho disponible */
             text-align: center;
             padding: 18px; /* Más espacio interior */
             font-size: 1.1em;
@@ -173,6 +185,7 @@
             margin-bottom: 10px;
             border-radius: 8px; /* Bordes más redondeados */
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Sombra muy suave */
+            box-sizing: border-box; /* padding y border no suman al ancho */
         }
         
         .option-button:hover {
@@ -191,7 +204,7 @@
         }
 
         #gerbera-image {
-            max-width: 100%;
+            max-width: 100%; /* Asegura que la imagen no se desborde */
             height: auto;
             border-radius: 10px; /* Bordes más redondeados */
             margin-top: 20px;
@@ -210,8 +223,9 @@
         }
         
         #rasca-gana {
-            width: 280px; /* Un poco más grande */
-            height: 140px; /* Un poco más alto */
+            width: 80%; /* Ajuste a porcentaje para ser más adaptable */
+            max-width: 280px; /* Limita el ancho máximo */
+            height: 140px; /* Altura fija, o podrías usar `aspect-ratio` */
             background-color: #ddd;
             border-radius: 10px;
             display: flex;
@@ -223,6 +237,8 @@
             border: 2px solid #fff; /* Contorno blanco */
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sombra suave */
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box; /* padding y border no suman al ancho */
+            margin: 0 auto; /* Centrar el elemento */
         }
         
         #rasca-gana span {
@@ -238,6 +254,23 @@
         #rasca-gana:hover {
             background-color: #eee;
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Estilos específicos para el control de audio */
+        audio {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 400px;
+            display: none; /* Se controla con JS para el autoplay */
+        }
+        #toggle-music {
+            margin-top: 10px;
+            background-color: #66bb6a;
+            border: 2px solid #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: white;
+            display: none; /* Se controla con JS */
         }
 
     </style>
@@ -261,8 +294,8 @@
     </div>
 
     <!-- Etiqueta de audio para la música de fondo -->
-    <audio id="background-music" src="images/amor.mp3" autoplay loop controls style="margin-top: 20px; width: 80%; max-width: 400px; display: none;"></audio>
-    <button id="toggle-music" style="margin-top: 10px; background-color: #66bb6a; border: 2px solid #fff; padding: 10px 20px; border-radius: 5px; color: white;">Música: ON</button>
+    <audio id="background-music" src="images/amor.mp3" autoplay loop controls></audio>
+    <button id="toggle-music">Música: ON</button>
 
     <script src="main.js"></script>
     <script>
@@ -271,12 +304,16 @@
             const toggleMusicButton = document.getElementById('toggle-music');
             let isPlaying = true; // Asumimos que la música empieza a reproducirse automáticamente
 
-            // Reproducir la música si el navegador lo permite
-            music.play().catch(error => {
-                console.log("La reproducción automática de audio fue bloqueada. El usuario debe interactuar para iniciarla.");
-                // Mostrar el botón de toggle si la reproducción automática falla
+            // Intentar reproducir la música al cargar. Los navegadores pueden bloquearlo.
+            music.play().then(() => {
+                // Si se reproduce, mostrar controles
+                music.style.display = 'block';
                 toggleMusicButton.style.display = 'block';
-                music.style.display = 'block'; // Asegura que los controles estén visibles
+            }).catch(error => {
+                // Si la reproducción automática falla (bloqueada), mostrar solo el botón para que el usuario inicie
+                console.log("La reproducción automática de audio fue bloqueada. El usuario debe interactuar para iniciarla.");
+                music.style.display = 'none'; // Ocultar controles automáticos si no funciona el autoplay
+                toggleMusicButton.style.display = 'block';
                 isPlaying = false;
                 toggleMusicButton.innerText = 'Música: OFF';
             });
@@ -293,13 +330,11 @@
                     toggleMusicButton.innerText = 'Música: ON';
                 }
                 isPlaying = !isPlaying;
+                // Mostrar los controles de audio si no estaban visibles
+                if (music.style.display === 'none') {
+                    music.style.display = 'block';
+                }
             });
-
-             // Hacer los controles de audio visibles solo después de que el usuario interactúe
-             // Esto puede variar por navegador, algunos no permiten autoplay sin interacción.
-             // Aquí lo hacemos visible una vez que la página carga
-             music.style.display = 'block';
-             toggleMusicButton.style.display = 'block';
         });
     </script>
 </body>

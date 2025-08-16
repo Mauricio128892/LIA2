@@ -135,14 +135,27 @@ document.addEventListener('DOMContentLoaded', () => {
             <div id="gerbera-body">${contenido.html}</div>
         `;
 
+        // Aplica la animación fade-in al contenido recién inyectado
+        const gerberaBody = document.getElementById('gerbera-body');
+        if (gerberaBody) {
+            gerberaBody.classList.add('fade-in');
+        }
+
         // Si la gerbera actual es la 1, adjunta el evento al botón de revelar
         if (nivel === 1) {
             document.getElementById('boton-gerbera1').addEventListener('click', () => {
-                const respuesta = document.getElementById('respuesta1').value;
-                userAnswers['Gerbera 1 - Lo que te enamoró'] = respuesta || 'No respondió';
+                const respuestaInput = document.getElementById('respuesta1');
+                const respuesta = respuestaInput.value.trim(); // .trim() para quitar espacios en blanco al inicio/final
+
+                if (respuesta === '') { // Si la respuesta está vacía
+                    alert("¡Por favor, escribe algo para continuar! 😉"); // Mensaje para que escriba
+                    respuestaInput.focus(); // Pone el foco de nuevo en el input
+                    return; // Detiene la ejecución para no avanzar
+                }
+
+                userAnswers['Gerbera 1 - Lo que te enamoró'] = respuesta; // Guarda la respuesta limpia
                 
                 // Reemplaza solo el contenido del cuerpo con el mensaje final y aplica fade-in
-                const gerberaBody = document.getElementById('gerbera-body');
                 if (gerberaBody) {
                     gerberaBody.classList.remove('fade-in'); // Elimina la animación anterior si existe
                     gerberaBody.innerHTML = contenido.finalMessage(respuesta);
@@ -170,6 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             botonEnviar.addEventListener('click', () => {
+                if (!respuestaSeleccionadaTexto) { // Obliga a seleccionar una opción
+                    alert("¡Por favor, selecciona una opción para continuar!");
+                    return;
+                }
                 if (respuestaCorrectaSeleccionada) {
                     userAnswers['Gerbera 2 - Primer Beso'] = respuestaSeleccionadaTexto;
                     const gerberaBody = document.getElementById('gerbera-body');
@@ -194,25 +211,38 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else if (nivel === 4) {
             const rascaGana = document.getElementById('rasca-gana');
-            // Asegúrate de que el evento se adjunte solo si el elemento existe
+            // Adjunta el evento solo si el elemento existe
             if (rascaGana) {
+                let hasBeenScratched = false; // Bandera para saber si ya se rascó
+
                 rascaGana.addEventListener('mouseover', () => {
-                    rascaGana.querySelector('span').style.color = 'black';
-                    setTimeout(() => {
-                        userAnswers['Gerbera 4 - Mensaje revelado'] = 'Mensaje de "Rasca y Gana" leído';
-                        const gerberaBody = document.getElementById('gerbera-body');
-                        if (gerberaBody) {
-                            gerberaBody.classList.remove('fade-in');
-                            gerberaBody.innerHTML = contenido.finalMessage();
-                            gerberaBody.classList.add('fade-in');
-                        }
-                    }, 1000);
+                    if (!hasBeenScratched) {
+                        rascaGana.querySelector('span').style.color = 'black';
+                        setTimeout(() => {
+                            userAnswers['Gerbera 4 - Mensaje revelado'] = 'Mensaje de "Rasca y Gana" leído';
+                            const gerberaBody = document.getElementById('gerbera-body');
+                            if (gerberaBody) {
+                                gerberaBody.classList.remove('fade-in');
+                                gerberaBody.innerHTML = contenido.finalMessage();
+                                gerberaBody.classList.add('fade-in');
+                            }
+                            hasBeenScratched = true; // Marca como rascado
+                        }, 1000);
+                    }
                 });
             }
         } else if (nivel === 5) {
             document.getElementById('boton-gerbera5').addEventListener('click', () => {
-                const deseo = document.getElementById('respuesta5').value;
-                userAnswers['Gerbera 5 - Deseo para el futuro'] = deseo || 'No escribió un deseo';
+                const deseoInput = document.getElementById('respuesta5');
+                const deseo = deseoInput.value.trim();
+
+                if (deseo === '') {
+                    alert("¡Por favor, escribe tu deseo para el futuro!");
+                    deseoInput.focus();
+                    return;
+                }
+
+                userAnswers['Gerbera 5 - Deseo para el futuro'] = deseo;
                 const gerberaBody = document.getElementById('gerbera-body');
                 if (gerberaBody) {
                     gerberaBody.classList.remove('fade-in');
@@ -221,8 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         } else if (nivel === 6) {
-            // No hay una "respuesta" de entrada aquí, solo la acción de enviar
-            // El contenido ya está en contenido.html
+            // Contenido final de la gerbera 6, no hay interacción de respuesta.
+            // Asegura que el botón de copiar y el mensaje divertido estén adjuntos sus eventos si es necesario
+            // (Ya están adjuntos globalmente, pero si estuvieran aquí se verificaría)
         }
     };
 
@@ -249,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Nuevo mensaje al final
         summaryText += "\nEres el papacito chulo más mamado e increíblemente guapo con el que he estado, ¡y estoy obsesionada contigo! 😍";
-        summaryText += "\n\n¡Te quiero mucho! 🥰"; // El mensaje de cariño final
+        summaryText += "\n\n¡Te quiero mucho! �"; // El mensaje de cariño final
 
         // Usar la API de Clipboard
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -272,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Función de fallback para copiar al portapapeles
+    // Función de fallback para copiar al portapapeles (para navegadores más antiguos o si falla la API)
     function fallbackCopyTextToClipboard(text) {
         const textArea = document.createElement("textarea");
         textArea.value = text;
@@ -291,13 +322,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 3000);
             }
         } catch (err) {
-            alert('No se pudo copiar el texto. Por favor, cópialo manualmente: ' + text);
+            alert('No se pudo copiar el texto. Por favor, cópialo manualmente: \n\n' + text);
         }
         document.body.removeChild(textArea);
     }
 
+    // Asegura que estas funciones estén disponibles globalmente para los onclick en el HTML
     window.unlockNextGerbera = unlockNextGerbera;
-    window.copyAnswersToClipboard = copyAnswersToClipboard; // Asegura que esté disponible globalmente
+    window.copyAnswersToClipboard = copyAnswersToClipboard; 
 
     gerberas.forEach(gerbera => {
         gerbera.addEventListener('click', (event) => {
